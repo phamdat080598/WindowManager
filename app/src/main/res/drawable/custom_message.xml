@@ -9,7 +9,7 @@
         android:radius="30dp"
         />
     <gradient
-        android:startColor="#84FFFF"
+        android:startColor="#FFEBEE"
         android:endColor="#82B1FF"
         />
 </shape>

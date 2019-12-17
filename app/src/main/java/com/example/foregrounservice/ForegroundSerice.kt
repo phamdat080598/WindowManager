@@ -50,6 +50,7 @@ class ForegroundSerice : Service(),View.OnTouchListener {
             }).start()
         }else{
             stopSelf()
+            //manager.removeViewImmediate(groupLayout)
         }
         Toast.makeText(this,"onStartCommand",Toast.LENGTH_SHORT).show()
         return START_STICKY
@@ -57,13 +58,13 @@ class ForegroundSerice : Service(),View.OnTouchListener {
 
     override fun onDestroy() {
         super.onDestroy()
-        //manager.removeView(groupLayout)
+        manager.removeView(groupLayout)
         Toast.makeText(this,"onDestroy",Toast.LENGTH_SHORT).show()
         check =false
     }
 
     fun initView(){
-        manager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        manager = getSystemService(WINDOW_SERVICE) as WindowManager
         createView()
         manager.addView(groupLayout,layoutParams)
     }
@@ -74,37 +75,41 @@ class ForegroundSerice : Service(),View.OnTouchListener {
         view = view1.message
 
         layoutParams = WindowManager.LayoutParams()
-        layoutParams.width = 400
+        layoutParams.x=0
+        layoutParams.y=0
+        layoutParams.width = WindowManager.LayoutParams.WRAP_CONTENT
         layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT
         layoutParams.gravity = Gravity.CENTER
         layoutParams.format = PixelFormat.TRANSLUCENT
         layoutParams.type = WindowManager.LayoutParams.TYPE_TOAST
         layoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-        layoutParams.flags = WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-        layoutParams.flags = WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
 
     }
 
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-        when(event?.action){
-            MotionEvent.ACTION_DOWN -> {
-                previousX = layoutParams.x
-                previousY = layoutParams.y
+        val layoutParams1: WindowManager.LayoutParams=layoutParams
+//        if(v?.id==R.id.layout) {
+            when (event?.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    previousX = layoutParams1.x
+                    previousY = layoutParams1.y
 
-                startX = event.rawX
-                startY = event.rawY
-            }
-                MotionEvent.ACTION_MOVE ->{
+                    startX = event.rawX
+                    startY = event.rawY
+                }
+                MotionEvent.ACTION_MOVE -> {
                     val x = event.rawX - startX
                     val y = event.rawY - startY
 
-                    layoutParams.x = (x+previousX).toInt()
-                    layoutParams.y = (y+previousY).toInt()
+                    layoutParams1.x = (x + previousX).toInt()
+                    layoutParams1.y = (y + previousY).toInt()
 
-                    manager.updateViewLayout(groupLayout,layoutParams)
+                    manager.updateViewLayout(groupLayout, layoutParams1)
                 }
-            MotionEvent.ACTION_OUTSIDE ->{}
-        }
+                MotionEvent.ACTION_OUTSIDE -> {
+                }
+            }
+//        }
         return false
     }
 
